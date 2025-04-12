@@ -1,5 +1,15 @@
 import { supabase } from './supabase';
-import type { Team, TeamMember, TeamInvitation } from '../types';
+import { APIClient, APIError } from './api-client';
+
+// Define interfaces
+export interface Team {
+  id: string;
+  name: string;
+  slug: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface TeamMember {
   id: string;
@@ -10,6 +20,17 @@ export interface TeamMember {
   status: 'active' | 'invited' | 'inactive';
   user_id?: string;
   invite_token?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeamInvitation {
+  id: string;
+  team_id: string;
+  email: string;
+  role: 'admin' | 'member';
+  status: 'pending' | 'accepted' | 'declined';
+  invite_token: string;
   created_at: string;
   updated_at: string;
 }
@@ -235,15 +256,20 @@ export const removeTeamMember = async (memberId: string): Promise<void> => {
  */
 export const acceptInvitation = async (token: string): Promise<{ success: boolean; message: string }> => {
   try {
-    const { data, error } = await supabase
-      .rpc('process_team_invitation', { token })
-      .single();
+    const { error } = await supabase
+      .rpc('process_team_invitation', { token });
 
     if (error) throw error;
-    return data;
+    return {
+      success: true,
+      message: 'Invitation accepted successfully'
+    };
   } catch (error) {
     console.error('Error accepting invitation:', error);
-    throw error;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to accept invitation'
+    };
   }
 };
 
@@ -339,6 +365,7 @@ export class TeamService extends APIClient {
         .single();
         
       if (error) throw error;
+      if (!data) throw new Error('Failed to create team');
       
       await supabase
         .from('team_members')
@@ -348,87 +375,137 @@ export class TeamService extends APIClient {
           role: 'owner'
         }]);
         
-      return data as Team;
+      return data;
     } catch (error) {
-      this.handleError(error);
+      return super.handleError(error);
     }
   }
 
   // Get team details
   static async getTeam(teamId: string): Promise<Team> {
-    const { data, error } = await supabase
-      .from('teams')
-      .select(`
-        *,
-        members:team_members(
-          id,
-          role,
-          user:profiles(id, full_name, avatar_url)
-        )
-      `)
-      .eq('id', teamId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .select(`
+          *,
+          members:team_members(
+            id,
+            role,
+            user:profiles(id, full_name, avatar_url)
+          )
+        `)
+        .eq('id', teamId)
+        .single();
+        
+      if (error) throw error;
+      if (!data) throw new Error('Team not found');
       
-    if (error) throw error;
-    return data;
+      return data;
+    } catch (error) {
+      return super.handleError(error);
+    }
   }
 
   // Update team
   static async updateTeam(teamId: string, updates: Partial<Team>): Promise<Team> {
-    const { data, error } = await supabase
-      .from('teams')
-      .update(updates)
-      .eq('id', teamId)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .update(updates)
+        .eq('id', teamId)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      if (!data) throw new Error('Failed to update team');
       
-    if (error) throw error;
-    return data;
+      return data;
+    } catch (error) {
+      return super.handleError(error);
+    }
   }
 
   // Invite member
   static async inviteMember(teamId: string, email: string, role: string): Promise<TeamInvitation> {
-    const { data, error } = await supabase
-      .from('team_invitations')
-      .insert([{
-        team_id: teamId,
-        email,
-        role
-      }])
-      .select()
-      .single();
+    try {
+      const inviteToken = crypto.randomUUID();
       
-    if (error) throw error;
-    return data;
+      const { data, error } = await supabase
+        .from('team_invitations')
+        .insert([{
+          team_id: teamId,
+          email,
+          role,
+          invite_token: inviteToken,
+          status: 'pending'
+        }])
+        .select()
+        .single();
+        
+      if (error) throw error;
+      if (!data) throw new Error('Failed to create invitation');
+      
+      return data;
+    } catch (error) {
+      return super.handleError(error);
+    }
   }
 
   // Accept invitation
   static async acceptInvitation(invitationId: string, userId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const { data: invitation } = await supabase
+      const { data: invitation, error: inviteError } = await supabase
         .from('team_invitations')
         .select()
         .eq('id', invitationId)
         .single();
 
+      if (inviteError) throw inviteError;
       if (!invitation) {
         return { success: false, message: 'Invitation not found' };
       }
 
-      await supabase.from('team_members').insert([{
-        team_id: invitation.team_id,
-        user_id: userId,
-        role: invitation.role
-      }]);
+      const { error: memberError } = await supabase
+        .from('team_members')
+        .insert([{
+          team_id: invitation.team_id,
+          user_id: userId,
+          role: invitation.role
+        }]);
 
-      await supabase
+      if (memberError) throw memberError;
+
+      const { error: updateError } = await supabase
         .from('team_invitations')
         .update({ status: 'accepted' })
         .eq('id', invitationId);
 
+      if (updateError) throw updateError;
+
       return { success: true, message: 'Invitation accepted successfully' };
     } catch (error) {
-      this.handleError(error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to accept invitation'
+      };
+    }
+  }
+
+  // Get current user's team memberships
+  static async getCurrentUserTeams(): Promise<Team[]> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*, team_members!inner(*)')
+        .eq('team_members.user_id', user.id);
+
+      if (error) throw error;
+      return (data || []) as Team[];
+    } catch (error) {
+      return super.handleError(error);
     }
   }
 } 

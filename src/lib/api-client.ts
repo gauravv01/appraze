@@ -7,11 +7,11 @@ export class APIError extends Error {
 }
 
 export class APIClient {
-  protected static async handleError(error: any) {
+  protected static handleError<T>(error: unknown): T {
     console.error('API Error:', error);
     throw new APIError(
-      error.code || 'UNKNOWN_ERROR',
-      error.message || 'An unexpected error occurred'
+      (error as any)?.code || 'UNKNOWN_ERROR',
+      (error as any)?.message || 'An unexpected error occurred'
     );
   }
 

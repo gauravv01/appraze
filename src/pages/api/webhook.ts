@@ -1,6 +1,6 @@
 import express from 'express';
 import { Stripe } from 'stripe';
-import { SubscriptionService } from '../../lib/subscriptionService';
+import { StripeAPI } from '../../lib/stripe-api';
 
 const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16'
@@ -23,10 +23,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       webhookSecret
     );
     
-    await SubscriptionService.handleWebhook(event);
+    await StripeAPI.handleWebhookEvent(event);
     res.json({ received: true });
   } catch (err) {
     const error = err as Error;
+    console.error('Webhook Error:', error.message);
     res.status(400).json({ error: `Webhook Error: ${error.message}` });
   }
 });
