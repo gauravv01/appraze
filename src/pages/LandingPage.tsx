@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Brain, Clock, FileText, Zap, Shield, Sparkles, Menu, X, CheckCircle, ArrowRight, PenTool, Target, Award, Users, BarChart3 } from 'lucide-react';
+import logo from '../../assets/images/APPRAZE.svg';
 
 const features = [
   {
@@ -144,8 +145,7 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Brain className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-xl font-semibold text-gray-900">PerformAI</span>
+            <img src={logo} alt="Apprai.io" className="h-24 w-24 text-primary-600" />
             </div>
             
             {/* Desktop Navigation */}
@@ -197,8 +197,7 @@ function LandingPage() {
           <div className="flex flex-col lg:flex-row items-center">
             <div className="lg:w-1/2 lg:pr-12 mb-12 lg:mb-0">
               <div className="flex items-center mb-4">
-                <Brain className="h-8 w-8 text-primary-600 mr-2" />
-                <span className="text-lg font-medium text-gray-700">Apprai.io</span>
+              <img src={logo} alt="Apprai.io" className="h-24 w-24 text-primary-600" />
               </div>
               <h1 className="text-5xl md:text-6xl lg:text-display-lg font-semibold tracking-tight text-gray-900 mb-6" style={{ lineHeight: '1.1' }}>
                 <span className="block">Write Better Reviews</span>

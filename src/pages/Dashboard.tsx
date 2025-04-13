@@ -15,6 +15,7 @@ import {
   CreditCard,
   UserPlus
 } from 'lucide-react';
+import logo from '../../assets/images/APPRAZE.svg';
 
 interface ReviewTemplate {
   id: string;
@@ -83,12 +84,9 @@ function Dashboard() {
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         w-64 bg-white border-r
       `}>
-        <div className="p-4 border-b">
-          <Link to="/" className="flex items-center space-x-2">
-            <Brain className="h-8 w-8 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">PerformAI</span>
+          <Link to="/" className="flex items-center justify-center">
+          <img src={logo} alt="Apprai.io" className="h-24 w-24 text-primary-600" />
           </Link>
-        </div>
         <nav className="p-4">
           {sidebarItems.map((item, index) => (
             <button
