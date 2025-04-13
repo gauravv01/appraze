@@ -1,77 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
+import { createTables } from './tables';
+import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
-async function runMigration() {
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Environment variables not found:');
+  console.error('VITE_SUPABASE_URL:', !!supabaseUrl);
+  console.error('SUPABASE_SERVICE_KEY:', !!supabaseServiceKey);
+  throw new Error('Missing Supabase credentials');
+}
+
+console.log('Initializing Supabase client with service role...');
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
+
+async function migrate() {
   try {
-    // Create migrations table if it doesn't exist
-    await supabase.rpc('create_migrations_table', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS migrations (
-          id SERIAL PRIMARY KEY,
-          version INTEGER NOT NULL,
-          name TEXT NOT NULL,
-          applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `
-    });
-
-    // Get applied migrations
-    const { data: appliedMigrations, error } = await supabase
-      .from('migrations')
-      .select('version')
-      .order('version', { ascending: true });
-
-    if (error) {
-      throw error;
-    }
-
-    const appliedVersions = new Set(appliedMigrations?.map(m => m.version) || []);
-
-    // Read migration files
-    const migrationsDir = path.join(__dirname, 'versions');
-    const files = fs.readdirSync(migrationsDir)
-      .filter(f => f.endsWith('.sql'))
-      .sort();
-
-    // Run each migration
-    for (const file of files) {
-      const version = parseInt(file.split('_')[0]);
-      if (appliedVersions.has(version)) {
-        console.log(`Migration ${version} already applied, skipping...`);
-        continue;
-      }
-
-      const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-      console.log(`Applying migration ${version}...`);
-
-      const { error: migrationError } = await supabase.rpc('run_migration', {
-        sql,
-        version,
-        name: file
-      });
-
-      if (migrationError) {
-        throw migrationError;
-      }
-
-      console.log(`Migration ${version} applied successfully`);
-    }
-
-    console.log('All migrations completed successfully');
+    console.log('Starting migration...');
+    await createTables(supabase);
+    console.log('Migration completed successfully');
   } catch (error) {
     console.error('Migration failed:', error);
     process.exit(1);
   }
 }
 
-runMigration(); 
+migrate(); 
