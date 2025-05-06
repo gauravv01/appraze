@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import webhookRouter from './pages/api/webhook';
+import cors from 'cors';
 
 // For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -21,6 +22,11 @@ app.use(express.static(clientBuildPath));
 app.get('*', (_req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
+
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
