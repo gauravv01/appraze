@@ -9,6 +9,7 @@
     "build:all": "vite build && npm run build:server",
     "lint": "eslint .",
     "preview": "vite preview",
+    "vercel-build": "npm run build && ls -la dist",
     "server": "NODE_ENV=development ts-node --project tsconfig.server.json -r dotenv/config src/server.ts",
     "migrate": "NODE_ENV=development ts-node --project tsconfig.server.json -r dotenv/config migrations/migrate.ts",
     "migrate:create": "NODE_ENV=development ts-node --project migrations/tsconfig.json -r dotenv/config migrations/create.ts",
