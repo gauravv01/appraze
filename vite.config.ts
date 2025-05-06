@@ -14,7 +14,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: 'client-dist',
     sourcemap: false,
     minify: 'terser',
     emptyOutDir: true,

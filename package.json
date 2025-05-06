@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+     "build:server": "tsc -p tsconfig.server.json",
+  "build:all": "vite build && npm run build:server",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "NODE_ENV=development ts-node --project migrations/tsconfig.json -r dotenv/config src/server.ts",
