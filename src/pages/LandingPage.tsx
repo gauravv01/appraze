@@ -5,27 +5,27 @@ import logo from '../../assets/images/APPRAZE.svg';
 
 const features = [
   {
-    icon: <Clock className="w-6 h-6 text-primary-600" />,
+    icon: <Clock className="w-6 h-6 text-teal-500" />,
     title: '5x Faster Reviews',
     description: 'Complete performance reviews in minutes instead of hours with AI assistance.'
   },
   {
-    icon: <PenTool className="w-6 h-6 text-primary-600" />,
+    icon: <PenTool className="w-6 h-6 text-teal-500" />,
     title: 'No More Writer\'s Block',
     description: 'Let AI generate the first draft while you focus on personalization.'
   },
   {
-    icon: <Target className="w-6 h-6 text-primary-600" />,
+    icon: <Target className="w-6 h-6 text-teal-500" />,
     title: 'Consistent & Fair Feedback',
     description: 'Maintain objectivity and fairness across all employee reviews.'
   },
   {
-    icon: <Shield className="w-6 h-6 text-primary-600" />,
+    icon: <Shield className="w-6 h-6 text-teal-500" />,
     title: 'Higher-Quality Feedback',
     description: 'Provide detailed, actionable feedback that helps employees grow.'
   },
   {
-    icon: <Sparkles className="w-6 h-6 text-primary-600" />,
+    icon: <Sparkles className="w-6 h-6 text-teal-500" />,
     title: 'Effortless & Intuitive',
     description: 'Simple interface that anyone can use without training.'
   }
@@ -33,17 +33,17 @@ const features = [
 
 const workflowSteps = [
   {
-    icon: <FileText className="w-10 h-10 text-primary-600" />,
+    icon: <FileText className="w-10 h-10 text-teal-500" />,
     title: 'Input Basic Information',
     description: 'Enter employee details, role, and review period - takes less than 30 seconds.'
   },
   {
-    icon: <Brain className="w-10 h-10 text-primary-600" />,
+    icon: <Brain className="w-10 h-10 text-teal-500" />,
     title: 'Generate Review Draft',
     description: 'Our AI creates a comprehensive review draft in under 2 minutes.'
   },
   {
-    icon: <PenTool className="w-10 h-10 text-primary-600" />,
+    icon: <PenTool className="w-10 h-10 text-teal-500" />,
     title: 'Review and Customize',
     description: 'Quickly review, edit, and finalize the draft to match your voice.'
   }
@@ -139,19 +139,19 @@ function LandingPage() {
   const [billingCycle, setBillingCycle] = useState('monthly');
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-teal-50/30 font-sans">
       {/* Navigation */}
-      <nav className="bg-white border-b fixed w-full top-0 z-50">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-teal-100 fixed w-full top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-            <img src={logo} alt="Apprai.io" className="h-24 w-24 text-primary-600" />
+            <img src={logo} alt="Apprai.io" className="h-24 w-24 text-teal-600" />
             </div>
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link to="/dashboard" className="text-gray-700 hover:text-gray-900 font-medium">Dashboard</Link>
-              <Link to="/dashboard" className="bg-primary-600 text-white px-8 py-2.5 rounded-full hover:bg-primary-700 transition font-medium">
+              <Link to="/dashboard" className="text-navy-600 hover:text-navy-900 font-medium">Dashboard</Link>
+              <Link to="/dashboard" className="bg-teal-500 text-white px-8 py-2.5 rounded-full hover:bg-teal-600 transition font-medium">
                 Get Started
               </Link>
             </div>
@@ -181,7 +181,7 @@ function LandingPage() {
               </Link>
               <Link
                 to="/dashboard"
-                className="block px-3 py-2 text-white bg-primary-600 hover:bg-primary-700 rounded-full"
+                className="block px-3 py-2 text-white bg-teal-600 hover:bg-teal-700 rounded-full"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Get Started
@@ -192,14 +192,14 @@ function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden pt-16 bg-gray-50">
+      <div className="relative overflow-hidden pt-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="flex flex-col lg:flex-row items-center">
             <div className="lg:w-1/2 lg:pr-12 mb-12 lg:mb-0">
               <div className="flex items-center mb-4">
-              <img src={logo} alt="Apprai.io" className="h-24 w-24 text-primary-600" />
+              <img src={logo} alt="Apprai.io" className="h-24 w-24 text-teal-600" />
               </div>
-              <h1 className="text-5xl md:text-6xl lg:text-display-lg font-semibold tracking-tight text-gray-900 mb-6" style={{ lineHeight: '1.1' }}>
+              <h1 className="text-5xl md:text-6xl lg:text-display-lg font-semibold tracking-tight text-navy-900 mb-6" style={{ lineHeight: '1.1' }}>
                 <span className="block">Write Better Reviews</span>
                 <span className="block">in 2 Minutes – Not 2 Weeks</span>
               </h1>
@@ -209,7 +209,7 @@ function LandingPage() {
               <div className="space-y-4">
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium rounded-full text-white bg-primary-600 hover:bg-primary-700 md:text-lg transition-colors"
+                  className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium rounded-full text-white bg-teal-500 hover:bg-teal-600 md:text-lg transition-colors"
                 >
                   Start Your Free Review
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -224,38 +224,38 @@ function LandingPage() {
                     <h3 className="text-lg font-medium mb-4">Performance Review Assistant</h3>
                     <div className="space-y-3">
                       <div className="flex items-start">
-                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-primary-100 flex items-center justify-center mr-3">
-                          <Users className="w-5 h-5 text-primary-600" />
+                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-teal-100 flex items-center justify-center mr-3">
+                          <Users className="w-5 h-5 text-teal-500" />
                         </div>
                         <div className="w-full">
-                          <div className="bg-gray-100 rounded-xl p-3 rounded-tl-none">
+                          <div className="bg-teal-50/80 rounded-xl p-3 rounded-tl-none">
                             <p className="text-sm">What type of review would you like to create?</p>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start justify-end">
                         <div className="w-full max-w-md">
-                          <div className="bg-primary-50 text-primary-900 rounded-xl p-3 rounded-tr-none">
+                          <div className="bg-teal-100 text-navy-900 rounded-xl p-3 rounded-tr-none">
                             <p className="text-sm">Annual performance review for a software developer</p>
                           </div>
                         </div>
-                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-primary-100 flex items-center justify-center ml-3">
-                          <Brain className="w-5 h-5 text-primary-600" />
+                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-teal-100 flex items-center justify-center ml-3">
+                          <Brain className="w-5 h-5 text-teal-500" />
                         </div>
                       </div>
                       <div className="flex items-start">
-                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-primary-100 flex items-center justify-center mr-3">
-                          <Users className="w-5 h-5 text-primary-600" />
+                        <div className="flex-shrink-0 rounded-full h-10 w-10 bg-teal-100 flex items-center justify-center mr-3">
+                          <Users className="w-5 h-5 text-teal-500" />
                         </div>
                         <div className="w-full">
-                          <div className="bg-gray-100 rounded-xl p-3 rounded-tl-none">
+                          <div className="bg-teal-50/80 rounded-xl p-3 rounded-tl-none">
                             <p className="text-sm">What are the employee's key strengths?</p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="bg-teal-100/50 rounded-xl p-4">
                     <div className="flex justify-between mb-3">
                       <span className="text-sm font-medium">Performance Metrics</span>
                       <span className="text-xs text-gray-500">Last updated today</span>
@@ -263,22 +263,22 @@ function LandingPage() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Code Quality</span>
-                        <div className="w-2/3 bg-gray-200 rounded-full h-2">
-                          <div className="bg-green-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                        <div className="w-2/3 bg-teal-100 rounded-full h-2">
+                          <div className="bg-teal-500 h-2 rounded-full" style={{ width: '85%' }}></div>
                         </div>
                         <span className="text-sm font-medium">85%</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Collaboration</span>
-                        <div className="w-2/3 bg-gray-200 rounded-full h-2">
-                          <div className="bg-green-500 h-2 rounded-full" style={{ width: '92%' }}></div>
+                        <div className="w-2/3 bg-teal-100 rounded-full h-2">
+                          <div className="bg-teal-500 h-2 rounded-full" style={{ width: '92%' }}></div>
                         </div>
                         <span className="text-sm font-medium">92%</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Deadlines</span>
-                        <div className="w-2/3 bg-gray-200 rounded-full h-2">
-                          <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '70%' }}></div>
+                        <div className="w-2/3 bg-teal-100 rounded-full h-2">
+                          <div className="bg-teal-500 h-2 rounded-full" style={{ width: '70%' }}></div>
                         </div>
                         <span className="text-sm font-medium">70%</span>
                       </div>
@@ -307,7 +307,7 @@ function LandingPage() {
             {workflowSteps.map((step, index) => (
               <div key={index} className="flex flex-col items-center text-center">
                 <div className="relative">
-                  <div className="h-20 w-20 rounded-full bg-primary-100 flex items-center justify-center mb-6">
+                  <div className="h-20 w-20 rounded-full bg-teal-100 flex items-center justify-center mb-6">
                     {step.icon}
                   </div>
                   {index < workflowSteps.length - 1 && (
@@ -320,19 +320,19 @@ function LandingPage() {
             ))}
           </div>
           
-          <div className="mt-20 bg-primary-50 p-8 rounded-2xl">
+          <div className="mt-20 bg-gradient-to-r from-teal-50 to-teal-100/50 p-8 rounded-2xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-6">
-                <div className="text-4xl font-bold text-primary-600 mb-2">5+</div>
-                <p className="text-gray-700">Hours saved per employee review</p>
+                <div className="text-4xl font-bold text-teal-500 mb-2">5+</div>
+                <p className="text-navy-700">Hours saved per employee review</p>
               </div>
               <div className="text-center p-6">
-                <div className="text-4xl font-bold text-primary-600 mb-2">3x</div>
-                <p className="text-gray-700">More comprehensive and detailed feedback</p>
+                <div className="text-4xl font-bold text-teal-500 mb-2">3x</div>
+                <p className="text-navy-700">More comprehensive and detailed feedback</p>
               </div>
               <div className="text-center p-6">
-                <div className="text-4xl font-bold text-primary-600 mb-2">98%</div>
-                <p className="text-gray-700">Manager satisfaction rate</p>
+                <div className="text-4xl font-bold text-teal-500 mb-2">98%</div>
+                <p className="text-navy-700">Manager satisfaction rate</p>
               </div>
             </div>
           </div>
@@ -376,13 +376,13 @@ function LandingPage() {
           
           {/* Billing Cycle Toggle */}
           <div className="flex justify-center mb-12">
-            <div className="inline-flex items-center bg-gray-100 rounded-full p-1">
+            <div className="inline-flex items-center bg-teal-100/50 rounded-full p-1">
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-4 py-2 rounded-full text-sm font-medium ${
                   billingCycle === 'monthly'
-                    ? 'bg-white shadow-sm text-gray-900'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white shadow-sm text-navy-900'
+                    : 'text-teal-600 hover:text-navy-900'
                 }`}
               >
                 Monthly
@@ -391,11 +391,11 @@ function LandingPage() {
                 onClick={() => setBillingCycle('annually')}
                 className={`px-4 py-2 rounded-full text-sm font-medium ${
                   billingCycle === 'annually'
-                    ? 'bg-white shadow-sm text-gray-900'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white shadow-sm text-navy-900'
+                    : 'text-teal-600 hover:text-navy-900'
                 }`}
               >
-                Annually <span className="text-primary-600 font-semibold">Save 17%</span>
+                Annually <span className="text-teal-700 font-semibold">Save 17%</span>
               </button>
             </div>
           </div>
@@ -406,12 +406,12 @@ function LandingPage() {
                 key={index} 
                 className={`bg-white rounded-xl border transition-all duration-300 ${
                   plan.highlighted 
-                    ? 'border-primary-500 shadow-lg scale-105 md:scale-110 z-10 relative' 
-                    : 'border-gray-200 hover:border-primary-300 hover:shadow'
+                    ? 'border-teal-500 shadow-lg shadow-teal-100 scale-105 md:scale-110 z-10 relative' 
+                    : 'border-teal-100 hover:border-teal-300 hover:shadow hover:shadow-teal-50'
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="bg-primary-500 text-white text-center text-sm font-medium py-1.5 px-4 rounded-t-xl">
+                  <div className="bg-teal-500 text-white text-center text-sm font-medium py-1.5 px-4 rounded-t-xl">
                     Most Popular
                   </div>
                 )}
@@ -427,7 +427,7 @@ function LandingPage() {
                   </div>
                   
                   {billingCycle === 'annually' && (
-                    <div className="bg-green-50 text-green-800 text-sm p-2 rounded-md mb-4">
+                    <div className="bg-teal-50 text-navy-800 text-sm p-2 rounded-md mb-4">
                       Save with 2 months free
                     </div>
                   )}
@@ -435,7 +435,7 @@ function LandingPage() {
                   <p className="text-gray-600 mb-6">{plan.description}</p>
                   
                   {plan.hasTrial && (
-                    <div className="bg-primary-50 text-primary-800 text-sm p-2 rounded-md mb-4 flex items-center">
+                    <div className="bg-teal-50 text-navy-800 text-sm p-2 rounded-md mb-4 flex items-center">
                       <Clock className="w-4 h-4 mr-1.5" />
                       3-day free trial available
                     </div>
@@ -444,7 +444,7 @@ function LandingPage() {
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-primary-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-teal-500 mr-2 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
                     ))}
@@ -454,8 +454,8 @@ function LandingPage() {
                     to="/dashboard"
                     className={`block w-full text-center py-3 rounded-lg font-medium ${
                       plan.highlighted
-                        ? 'bg-primary-600 text-white hover:bg-primary-700'
-                        : 'bg-white border border-primary-600 text-primary-600 hover:bg-primary-50'
+                        ? 'bg-teal-600 text-white hover:bg-teal-700'
+                        : 'bg-white border border-teal-600 text-teal-500 hover:bg-teal-50'
                     } transition-colors`}
                   >
                     {plan.buttonText}
@@ -466,7 +466,7 @@ function LandingPage() {
           </div>
           
           {/* Enterprise Plan */}
-          <div className="mt-12 p-8 border border-gray-200 rounded-xl bg-gray-50">
+          <div className="mt-12 p-8 border border-teal-100 rounded-xl bg-gradient-to-r from-teal-50 to-white">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{enterprisePlan.name}</h3>
@@ -475,7 +475,7 @@ function LandingPage() {
               </div>
               <a
                 href="mailto:sales@appraze.io"
-                className="mt-6 md:mt-0 px-5 py-3 bg-white border border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 font-medium"
+                className="mt-6 md:mt-0 px-5 py-3 bg-white border border-teal-500 text-teal-500 rounded-lg hover:bg-teal-50 font-medium"
               >
                 {enterprisePlan.buttonText}
               </a>
@@ -484,7 +484,7 @@ function LandingPage() {
           
           <div className="mt-10 text-center">
             <p className="text-gray-600">
-              All plans come with a money-back guarantee. <a href="#" className="text-primary-600 font-medium">Learn more</a>
+              All plans come with a money-back guarantee. <a href="#" className="text-teal-600 font-medium">Learn more</a>
             </p>
             <p className="text-gray-500 mt-2">
               Annual plans save 2 months free: Starter £90/year • Growth £290/year • Pro £790/year
@@ -507,8 +507,8 @@ function LandingPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white p-8 rounded-2xl relative shadow-sm">
-                <div className="absolute top-6 left-6 text-primary-200">
+              <div key={index} className="bg-white p-8 rounded-2xl relative shadow-sm hover:shadow-md transition-shadow border border-teal-50">
+                <div className="absolute top-6 left-6 text-teal-200">
                   <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.5 20H7.5C6.83696 20 6.20107 19.7366 5.73223 19.2678C5.26339 18.7989 5 18.163 5 17.5V15C5 14.337 5.26339 13.7011 5.73223 13.2322C6.20107 12.7634 6.83696 12.5 7.5 12.5H10C10.3315 12.5 10.6495 12.3683 10.8839 12.1339C11.1183 11.8995 11.25 11.5815 11.25 11.25V10C11.25 9.66848 11.1183 9.35054 10.8839 9.11612C10.6495 8.8817 10.3315 8.75 10 8.75H7.5M25 20H20C19.337 20 18.7011 19.7366 18.2322 19.2678C17.7634 18.7989 17.5 18.163 17.5 17.5V15C17.5 14.337 17.7634 13.7011 18.2322 13.2322C18.7011 12.7634 19.337 12.5 20 12.5H22.5C22.8315 12.5 23.1495 12.3683 23.3839 12.1339C23.6183 11.8995 23.75 11.5815 23.75 11.25V10C23.75 9.66848 23.6183 9.35054 23.3839 9.11612C23.1495 8.8817 22.8315 8.75 22.5 8.75H20" stroke="#C4B5FD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -537,17 +537,17 @@ function LandingPage() {
               Trusted by Leading Companies
             </h2>
             <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-              <div className="flex justify-center items-center bg-gray-50 p-8 rounded-xl">
-                <Award className="h-12 w-12 text-gray-400" />
+              <div className="flex justify-center items-center bg-teal-50/50 p-8 rounded-xl hover:bg-teal-100/50 transition-colors">
+                <Award className="h-12 w-12 text-teal-400" />
               </div>
-              <div className="flex justify-center items-center bg-gray-50 p-8 rounded-xl">
-                <BarChart3 className="h-12 w-12 text-gray-400" />
+              <div className="flex justify-center items-center bg-teal-50/50 p-8 rounded-xl hover:bg-teal-100/50 transition-colors">
+                <BarChart3 className="h-12 w-12 text-teal-400" />
               </div>
-              <div className="flex justify-center items-center bg-gray-50 p-8 rounded-xl">
-                <Shield className="h-12 w-12 text-gray-400" />
+              <div className="flex justify-center items-center bg-teal-50/50 p-8 rounded-xl hover:bg-teal-100/50 transition-colors">
+                <Shield className="h-12 w-12 text-teal-400" />
               </div>
-              <div className="flex justify-center items-center bg-gray-50 p-8 rounded-xl">
-                <Users className="h-12 w-12 text-gray-400" />
+              <div className="flex justify-center items-center bg-teal-50/50 p-8 rounded-xl hover:bg-teal-100/50 transition-colors">
+                <Users className="h-12 w-12 text-teal-400" />
               </div>
             </div>
           </div>
@@ -555,14 +555,14 @@ function LandingPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t">
+      <footer className="bg-gradient-to-b from-white to-teal-50/30 border-t border-teal-100">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center flex-col md:flex-row space-y-4 md:space-y-0">
             <div className="flex items-center">
-              <Brain className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-xl font-semibold text-gray-900">PerformAI</span>
+              <Brain className="h-8 w-8 text-teal-500" />
+              <span className="ml-2 text-xl font-semibold text-navy-900">PerformAI</span>
             </div>
-            <p className="text-gray-500">© 2025 PerformAI. All rights reserved.</p>
+            <p className="text-teal-600/70">© 2025 PerformAI. All rights reserved.</p>
           </div>
         </div>
       </footer>
