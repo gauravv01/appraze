@@ -13,7 +13,8 @@ import {
   MoreVertical,
   Menu,
   CreditCard,
-  UserPlus
+  UserPlus,
+  LogOut
 } from 'lucide-react';
 import logo from '../../assets/images/APPRAZE.svg';
 
@@ -102,6 +103,14 @@ function Dashboard() {
             </button>
           ))}
         </nav>
+        <div onClick={() => {
+          navigate('/auth/login');
+          localStorage.removeItem('userId');
+          setIsMobileMenuOpen(false);
+        }} className="text-gray-600 hover:bg-gray-50 p-4 flex items-center space-x-2 absolute bottom-0 w-full hover:text-primary-600 cursor-pointer">
+          <LogOut className="w-5 h-5" />
+          <span>Logout</span>
+        </div>
       </div>
 
       {/* Main Content */}

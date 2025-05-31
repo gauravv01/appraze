@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { toast } from 'react-toastify';
 import DashboardLayout from '../components/DashboardLayout';
 import {
   ArrowLeft,
@@ -17,7 +18,7 @@ import {
   XCircle,
   Download,
   Copy,
-  File
+  File,
 } from 'lucide-react';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import { generatePDF, generateWord } from '../lib/document-utils';
@@ -171,25 +172,16 @@ export default function ReviewDetail() {
   };
 
   // For PDF download button, use File icon with a PDF label
-  const FilePdf = () => (
-    <div className="relative">
-      <File className="w-5 h-5" />
-      <span className="absolute bottom-0 right-0 text-xs font-bold">PDF</span>
-    </div>
-  );
+
 
   // For Word download button, use File icon with a DOC label
-  const FileWord = () => (
-    <div className="relative">
-      <File className="w-5 h-5" />
-      <span className="absolute bottom-0 right-0 text-xs font-bold">DOC</span>
-    </div>
-  );
+
 
   const copyToClipboard = () => {
     if (review?.content) {
       navigator.clipboard.writeText(review.content);
     }
+    toast.success('Copied to clipboard');
   };
 
   const downloadReviewAsPDF = () => {
@@ -287,13 +279,7 @@ export default function ReviewDetail() {
           </div>
           
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate(`/dashboard/reviews/edit/${review.id}`)}
-              className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Pencil className="w-4 h-4 mr-2" />
-              Edit
-            </button>
+        
             <button
               onClick={() => setShowDeleteModal(true)}
               className="flex items-center px-4 py-2 border border-transparent bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
@@ -381,25 +367,33 @@ export default function ReviewDetail() {
               <div className="flex space-x-2">
                 <button 
                   onClick={copyToClipboard}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+                  className="p-2 text-[#008080] hover:text-[#008080]  rounded "
                   title="Copy to clipboard"
                 >
-                  <Copy className="w-5 h-5" />
+                  <Copy className="w-[40px] h-[40px]" />
                 </button>
+             
                 <button 
                   onClick={downloadReviewAsPDF}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+                  className="p-2 text-[#008080] hover:text-[#008080]  rounded "
                   title="Download as PDF"
                 >
-                  <FilePdf />
+                  <div className="relative">
+                  <File className="w-[40px] h-[40px]" />
+                  <span className="text-[10px] absolute bottom-[10px] right-[9px]">PDF</span>
+                  </div>
                 </button>
+{/*              
                 <button 
                   onClick={downloadReviewAsWord}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+                  className="p-2 text-[#008080] hover:text-[#008080]  rounded "
                   title="Download as Word document"
                 >
-                  <FileWord />
-                </button>
+<div className="relative">
+                    <File className="w-[40px] h-[40px]" />
+                    <span className="text-[10px] absolute bottom-[10px] right-[9px]">DOC</span>
+                </div>
+                </button> */}
               </div>
             )}
           </div>

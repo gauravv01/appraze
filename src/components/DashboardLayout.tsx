@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Brain, Layout, FileText, Users, Settings, Menu, CreditCard, UserPlus } from 'lucide-react';
+import { Brain, Layout, FileText, Users, Settings, Menu, CreditCard, UserPlus ,LogOut} from 'lucide-react';
 import logo from '../../assets/images/APPRAZE.svg';
 
 const sidebarItems = [
@@ -33,7 +33,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 transform lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30
+        fixed inset-y-0 left-0 transform lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30 h-[100vh]
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         w-64 bg-white border-r
       `}>
@@ -59,6 +59,14 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
           ))}
         </nav>
+        <div onClick={() => {
+          navigate('/auth/login');
+          localStorage.removeItem('userId');
+          setIsMobileMenuOpen(false);
+        }} className="text-gray-600 hover:bg-gray-50 p-4 flex items-center space-x-2 absolute bottom-0 w-full hover:text-primary-600 cursor-pointer">
+          <LogOut className="w-5 h-5" />
+          <span>Logout</span>
+        </div>
       </div>
 
       {/* Main Content */}

@@ -150,7 +150,7 @@ function Reviews() {
         ) : (
           /* Review Cards */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reviews && reviews.length > 0 && reviews.map((review) => (
+            {!showNewReview && reviews && reviews.length > 0 && reviews.map((review) => (
               <div key={review.id} className="bg-white rounded-lg border p-4 hover:border-indigo-500 transition-colors">
                 <div className="flex justify-between items-start mb-4">
                   <div>

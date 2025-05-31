@@ -60,9 +60,19 @@ export default function ReviewForm({ onClose }: ReviewFormProps) {
     async function fetchEmployees() {
       try {
         setLoadingEmployees(true);
+        const user = localStorage.getItem('userId');
+        if (!user) {
+          throw new Error('User not found');
+        }
+        const {data:profileData}=await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user)
+        .order('name').single();
         const { data, error } = await supabase
           .from('employees')
           .select('*')
+          .eq('organization_id', profileData.organization_id)
           .order('name');
         
         if (error) throw error;
@@ -85,10 +95,11 @@ export default function ReviewForm({ onClose }: ReviewFormProps) {
         const { data, error } = await supabase
           .from('review_templates')
           .select('id, name')
-          .order('name');
+          .order('name')
+          .maybeSingle();
         
         if (error) throw error;
-        setTemplates(data || []);
+        setTemplates((data || []) as Template[]);
       } catch (err) {
         console.error('Error fetching templates:', err);
       } finally {
