@@ -38,61 +38,72 @@ export interface TeamInvitation {
 /**
  * Fetch team members for the current user's organization
  */
+
 export const fetchTeamMembers = async (): Promise<TeamMember[]> => {
   try {
-    // First, get the current user's profile to get organization_id
-    const { data: userData } = await supabase.auth.getUser();
-    
-    if (!userData?.user?.id) {
+    // Step 1: Get current authenticated user
+    const userId=localStorage.getItem('userId');
+    if (!userId) {
       throw new Error('Not authenticated');
     }
 
+
+    // Step 2: Fetch user profile (to get organization_id)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('organization_id, role')
-      .eq('id', userData.user.id)
-      .single();
+      .eq('id', userId)
+      .select()
+      .maybeSingle();
 
-    if (profileError) throw profileError;
-    
-    // If no organization_id exists, create one for the user
-    if (!profile?.organization_id) {
-      // Generate a new organization ID
-      const organizationId = crypto.randomUUID();
-      
-      // Update the user's profile with the new organization_id
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ 
-          organization_id: organizationId,
-          role: 'admin', // Set as admin for the creator
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userData.user.id);
-        
-      if (updateError) throw updateError;
-      
-      // Return empty array as there are no team members yet
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
       return [];
     }
 
-    // Then fetch team members for this organization
+    let organizationId = profile?.organization_id;
+
+    // Step 3: Create organization if not exists
+    if (!organizationId) {
+      organizationId = crypto?.randomUUID?.() ?? self.crypto.randomUUID();
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          organization_id: organizationId,
+          role: 'admin',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Failed to assign new organization:', updateError);
+        return [];
+      }
+
+      // Nothing else to fetch, this user is the first
+      return [];
+    }
+
+    // Step 4: Fetch team members in the organization
     const { data: members, error: membersError } = await supabase
       .from('team_members')
       .select('*')
-      .eq('organization_id', profile.organization_id)
+      .eq('organization_id', organizationId)
       .order('created_at', { ascending: false });
 
-    if (membersError) throw membersError;
-    
-    // Return the results, or empty array if no members found
+    if (membersError) {
+      console.error('Failed to fetch team members:', membersError);
+      return [];
+    }
+
     return members || [];
   } catch (error) {
-    console.error('Error fetching team members:', error);
-    // Return empty array instead of throwing to avoid infinite loading
+    console.error('Unexpected error:', error);
     return [];
   }
 };
+
 
 /**
  * Invite a new team member
@@ -104,17 +115,16 @@ export const inviteTeamMember = async (
 ): Promise<TeamMember> => {
   try {
     // Get the current user's organization
-    const { data: userData } = await supabase.auth.getUser();
-    
-    if (!userData?.user?.id) {
+    const userId=localStorage.getItem('userId');
+    if (!userId) {
       throw new Error('Not authenticated');
     }
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('organization_id, role')
-      .eq('id', userData.user.id)
-      .single();
+      .eq('id', userId)
+      .maybeSingle();
 
     if (profileError) throw profileError;
     if (!profile?.organization_id) {
@@ -122,9 +132,9 @@ export const inviteTeamMember = async (
     }
 
     // Check if the current user is an admin
-    if (profile.role !== 'admin') {
-      throw new Error('Only admins can invite team members');
-    }
+    // if (profile.role !== 'admin') {
+    //   throw new Error('Only admins can invite team members');
+    // }
 
     // Check if this email is already a member
     const { data: existingMember, error: checkError } = await supabase
@@ -132,7 +142,7 @@ export const inviteTeamMember = async (
       .select('id, status')
       .eq('email', email)
       .eq('organization_id', profile.organization_id)
-      .single();
+      .maybeSingle();
 
     if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is the code for "no rows returned"
       throw checkError;
@@ -188,7 +198,9 @@ export const resendInvitation = async (memberId: string): Promise<void> => {
       .from('team_members')
       .update({ invite_token: inviteToken, updated_at: new Date().toISOString() })
       .eq('id', memberId)
-      .eq('status', 'invited');
+      .eq('status', 'invited')
+      .select()
+      .maybeSingle();
 
     if (error) throw error;
   } catch (error) {
@@ -284,52 +296,24 @@ export const getCurrentUserProfile = async (): Promise<{
   role: 'admin' | 'member';
 }> => {
   try {
-    const { data: userData } = await supabase.auth.getUser();
-    
-    if (!userData?.user) {
+    const userId=localStorage.getItem('userId');
+    if (!userId) {
       throw new Error('Not authenticated');
     }
 
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('id, full_name, organization_id, role')
-      .eq('id', userData.user.id)
-      .single();
+      .select('id,  name, organization_id, role')
+      .eq('id', userId)
+      .maybeSingle();
 
     if (error) throw error;
     
     // If organization_id is missing, create one for this user
-    if (!profile?.organization_id) {
-      // Generate a new organization ID
-      const organizationId = crypto.randomUUID();
-      
-      // Update the user's profile
-      const { error: updateError, data: updatedProfile } = await supabase
-        .from('profiles')
-        .update({ 
-          organization_id: organizationId,
-          role: 'admin', // Default to admin for new organization
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userData.user.id)
-        .select()
-        .single();
-        
-      if (updateError) throw updateError;
-      
-      return {
-        id: userData.user.id,
-        email: userData.user.email || '',
-        name: updatedProfile?.full_name || null,
-        organization_id: organizationId,
-        role: 'admin'
-      };
-    }
-    
     return {
-      id: userData.user.id,
-      email: userData.user.email || '',
-      name: profile?.full_name || null,
+      id: profile?.id || '',
+      email: profile?.email || '',
+      name: profile?.name || null,
       organization_id: profile?.organization_id || '',
       role: (profile?.role as 'admin' | 'member') || 'member'
     };

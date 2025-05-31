@@ -74,48 +74,28 @@ export default function ReviewDetail() {
         setIsLoading(true);
         
         // Fetch the review with related data
-        const { data, error } = await supabase
-          .from('reviews')
-          .select(`
-            id,
-            employee_id,
-            template_id,
-            review_date,
-            status,
-            content,
-            created_at,
-            updated_at,
-            employee:employees(id, name, position, department, email),
-            template:review_templates(id, name, description)
-          `)
-          .eq('id', reviewId)
-          .single();
-        
-        if (error) throw error;
-        
-        if (!data) {
-          setError('Review not found');
-          setIsLoading(false);
-          return;
-        }
+   
 
         // Fetch review field values
         const { data: fieldValues, error: fieldValuesError } = await supabase
-          .from('review_field_values')
-          .select(`
-            id,
-            field_id,
-            value,
-            field:review_fields(id, name, description, field_type, required)
-          `)
-          .eq('review_id', reviewId);
+          .from('reviews')
+          .select(`*`)
+          .eq('id', reviewId).maybeSingle();
+
+        const { data: employee, error: employeeError } = await supabase
+          .from('employees')
+          .select(`*`)
+          .eq('id', fieldValues?.employee_id)
+          .single();
         
         if (fieldValuesError) throw fieldValuesError;
-        
+        console.log(fieldValues,employee);
         // Combine data
         setReview({
-          ...data,
-          fieldValues: fieldValues || []
+          ...fieldValues,
+          employee: employee || null,
+          template: fieldValues.template?.[0] || null,
+          fieldValues: fieldValues.fieldValues || []
         });
         
       } catch (err) {
@@ -137,9 +117,9 @@ export default function ReviewDetail() {
       
       // Delete field values first (if any)
       await supabase
-        .from('review_field_values')
+        .from('reviews')
         .delete()
-        .eq('review_id', reviewId);
+        .eq('id', reviewId);
       
       // Then delete the review
       const { error } = await supabase

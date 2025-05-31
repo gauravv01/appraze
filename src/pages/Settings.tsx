@@ -5,6 +5,7 @@ import { User, Lock, Save, AlertCircle, Loader, CheckCircle } from 'lucide-react
 import { getUserProfile, updateUserProfile } from '../../database-api.js';
 // @ts-ignore
 import { updatePassword, getCurrentUser } from '../../auth.js';
+import { supabase } from '../lib/supabase.js';
 
 interface ProfileData {
   id: string;
@@ -24,9 +25,9 @@ interface PasswordForm {
 function Settings() {
   // Profile data state
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [profileForm, setProfileForm] = useState<Partial<ProfileData>>({
+  const [profileForm, setProfileForm] = useState<Partial<any>>({
     full_name: '',
-    company_name: ''
+    organization_name: ''
   });
   const [email, setEmail] = useState<string>('');
   
@@ -54,18 +55,27 @@ function Settings() {
         setError(null);
         
         // Get user email
-        const user = await getCurrentUser();
-        if (user && user.email) {
-          setEmail(user.email);
+        const userId=localStorage.getItem('userId');
+        if (!userId) {
+          throw new Error('Not authenticated');
+        }
+        const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+        if (profileError) throw profileError;
+        if (profile && profile.email) {
+          setEmail(profile.email);
         }
         
         // Get profile data
-        const profileData = await getUserProfile();
-        if (profileData) {
-          setProfile(profileData);
+        
+        if (profile) {
+          setProfile(profile);
           setProfileForm({
-            full_name: profileData.full_name || '',
-            company_name: profileData.company_name || ''
+            name: profile.name || '',
+            organization_name: profile.organization_name || ''
           });
         }
       } catch (err) {
@@ -101,8 +111,16 @@ function Settings() {
       setIsSaving(true);
       setSaveSuccess(false);
       setError(null);
-      
-      await updateUserProfile(profileForm);
+      const userId=localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('Not authenticated');
+      }
+      await supabase
+      .from('profiles')
+      .update(profileForm)
+      .eq('id', userId)
+      .select()
+      .maybeSingle();
       
       // Update local state
       setProfile(prev => prev ? { ...prev, ...profileForm } : null);
@@ -187,14 +205,14 @@ function Settings() {
               <form onSubmit={handleSaveProfile} className="space-y-6">
                 {/* Full Name */}
                 <div>
-                  <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
                   </label>
                   <input
                     type="text"
-                    id="full_name"
-                    name="full_name"
-                    value={profileForm.full_name || ''}
+                    id="name"
+                    name="name"
+                    value={profileForm.name || ''}
                     onChange={handleProfileChange}
                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Enter your full name"
@@ -203,17 +221,17 @@ function Settings() {
                 
                 {/* Company Name */}
                 <div>
-                  <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Company Name
+                  <label htmlFor="organization_name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Organization Name
                   </label>
                   <input
                     type="text"
-                    id="company_name"
-                    name="company_name"
-                    value={profileForm.company_name || ''}
+                    id="organization_name"
+                    name="organization_name"
+                    value={profileForm.organization_name || ''}
                     onChange={handleProfileChange}
                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Enter your company name"
+                    placeholder="Enter your organization name"
                   />
                 </div>
                 

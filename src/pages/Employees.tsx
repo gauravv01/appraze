@@ -63,9 +63,26 @@ function Employees() {
     async function fetchEmployees() {
       try {
         setIsLoading(true);
+
+
+
+        const { data: members, error: membersError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', localStorage.getItem('userId'))
+          .order('created_at', { ascending: false })
+          .maybeSingle();
+
+        if (membersError) throw membersError;
+
+        const organizationId = members?.organization_id;
+
+        if (!organizationId) setEmployees([]);
+
         const { data, error } = await supabase
           .from('employees')
           .select('*')
+          .eq('organization_id', organizationId)
           .order('name');
         
         if (error) throw error;
@@ -130,19 +147,34 @@ function Employees() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    
     try {
+      const {data:organizationData, error} = await supabase
+      .from('organizations')
+      .select('id')
+      .eq('admin_id', localStorage.getItem('userId'))
+      .single();
+
+      if (error) throw error;
+      const newFormData:any = {...formData};
+      newFormData.first_name = formData.name.split(' ')[0];
+      newFormData.last_name = formData.name.split(' ')[1];
+      delete newFormData.name;
       if (currentEmployee) {
         // Edit existing employee
         const { error } = await supabase
           .from('employees')
-          .update(formData)
-          .eq('id', currentEmployee.id);
+          .update(newFormData)
+          .eq('id', currentEmployee.id)
+          .eq('organization_id', organizationData.id)
+          .select()
+          .single();
         
         if (error) throw error;
         
         // Update local state
         setEmployees(employees.map(emp => 
-          emp.id === currentEmployee.id ? { ...formData, id: currentEmployee.id } : emp
+          emp.id === currentEmployee.id ? { ...newFormData, id: currentEmployee.id } : emp
         ));
       } else {
         // Add new employee
@@ -154,7 +186,7 @@ function Employees() {
         // Create new employee with user_id
         const { data, error } = await supabase
           .from('employees')
-          .insert([{ ...formData, user_id: user.id }])
+          .insert([{ ...newFormData, organization_id: organizationData.id }])
           .select();
         
         if (error) throw error;
@@ -195,10 +227,10 @@ function Employees() {
 
   // Filter employees based on search term
   const filteredEmployees = employees.filter(employee => 
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.email.toLowerCase().includes(searchTerm.toLowerCase())
+    employee.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    employee.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    employee.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    employee.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Employee menu for each card

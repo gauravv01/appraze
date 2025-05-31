@@ -54,9 +54,9 @@ function Reviews() {
             template:review_templates(name)
           `)
           .order('review_date', { ascending: false });
-        
+        console.log(data);
         if (error) throw error;
-        setReviews(data || []);
+        setReviews((data || []) as any as Review[]);
         setError(null); // Clear any previous errors
       } catch (err) {
         console.error('Error fetching reviews:', err);
@@ -150,7 +150,7 @@ function Reviews() {
         ) : (
           /* Review Cards */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reviews.map((review) => (
+            {reviews && reviews.length > 0 && reviews.map((review) => (
               <div key={review.id} className="bg-white rounded-lg border p-4 hover:border-indigo-500 transition-colors">
                 <div className="flex justify-between items-start mb-4">
                   <div>

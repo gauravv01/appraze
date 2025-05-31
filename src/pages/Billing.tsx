@@ -133,7 +133,7 @@ function Billing() {
         .from('profiles')
         .select('stripe_customer_id, subscription_status, subscription_period_end')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profile?.stripe_customer_id) {
         // Load subscription details
@@ -163,7 +163,7 @@ function Billing() {
         .from('profiles')
         .select('stripe_customer_id, email')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile) throw new Error('Profile not found');
 

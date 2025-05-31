@@ -1,96 +1,81 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Brain, Mail, Lock, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect,useLayoutEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Brain, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import logo from '../../../assets/images/APPRAZE.svg';
 
 
-export default function SignUp() {
+export default function ResetPassword() {
  const navigate = useNavigate();
+ const [searchParams] = useSearchParams();
+ const type = searchParams.get('type');
+
+
  const [isLoading, setIsLoading] = useState(false);
  const [error, setError] = useState<string | null>(null);
+ const [success, setSuccess] = useState<string | null>(null);
+ const [token, setToken] = useState<string | null>(null);
  const [formData, setFormData] = useState({
-   email: '',
    password: '',
    confirmPassword: ''
  });
+
+
+ useLayoutEffect(() => {
+   const url = new URL(window.location.href);
+   const token = url.searchParams.get('token');
+   console.log('token', token);
+   setToken(token);
+ }, []);
+
+
+//   useEffect(() => {
+//     // Verify the token is present
+//     if (!token ) {
+//       setError('Invalid or expired reset link. Please request a new password reset.');
+//     }
+//   }, [token, type]);
 
 
  const handleSubmit = async (e: React.FormEvent) => {
    e.preventDefault();
    setIsLoading(true);
    setError(null);
-
-
-   if (formData.password !== formData.confirmPassword) {
-     setError('Passwords do not match');
-     setIsLoading(false);
-     return;
-   }
+   setSuccess(null);
 
 
    try {
-     const { data, error } = await supabase.auth.signUp({
-       email: formData.email,
+     // Validate passwords match
+     if (formData.password !== formData.confirmPassword) {
+       setError('Passwords do not match');
+       return;
+     }
+
+
+     // Validate password strength
+     if (formData.password.length < 6) {
+       setError('Password must be at least 6 characters long');
+       return;
+     }
+
+
+     const { error } = await supabase.auth.updateUser({
        password: formData.password
      });
 
-if (!data?.user?.id) {
-  throw new Error('User not authenticated');
-  return;
-}
-
-localStorage.setItem('userId', data.user.id);
-
-// Check if the user already has an organization
-let organizationId;
-let userName = data.user.user_metadata?.name || '';
-// Try to fetch an existing profile for this email
-const { data: existingProfile, error: profileFetchError } = await supabase
-  .from('profiles')
-  .select('organization_id')
-  .eq('email', data.user.email)
-  .maybeSingle();
-
-if (profileFetchError) throw profileFetchError;
-
-if (existingProfile && existingProfile.organization_id) {
-  organizationId = existingProfile.organization_id;
-} else {
-  // Create a new organization if not found
-  organizationId = crypto?.randomUUID?.() ?? self.crypto.randomUUID();
-  const { data: organizationData, error: orgError } = await supabase
-    .from('organizations')
-    .insert({
-      id: organizationId,
-      name: userName,
-      admin_id: data.user.id
-    })
-    .select()
-    .single();
-  if (orgError) throw orgError;
-  organizationId = organizationData?.id;
-}
-
-// Insert the profile
-const { error: profileError } = await supabase
-  .from('profiles')
-  .insert({
-    id: data.user.id,
-    email: data.user.email,
-    name: userName,
-    organization_id: organizationId
-  })
-  .select()
-  .single();
-
-if (profileError) throw profileError;
-
 
      if (error) throw error;
-     navigate('/dashboard');
+
+
+     setSuccess('Password has been reset successfully');
+     // Redirect to login after 2 seconds
+     setTimeout(() => {
+       navigate('/auth/login');
+     }, 2000);
+
+
    } catch (err) {
-     setError(err instanceof Error ? err.message : 'An error occurred during sign up');
+     setError(err instanceof Error ? err.message : 'An error occurred while resetting password');
    } finally {
      setIsLoading(false);
    }
@@ -101,18 +86,13 @@ if (profileError) throw profileError;
    <div className="min-h-screen bg-gradient-to-b from-teal-50/30 to-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
      <div className="sm:mx-auto sm:w-full sm:max-w-md">
        <div className="flex justify-center mb-4">
-         <Link to="/" className="flex items-center">
-           <img src={logo} alt="Appraze" className="h-20 w-20 text-teal-600" />
-         </Link>
+         <img src={logo} alt="Appraze" className="h-20 w-20 text-teal-600" />
        </div>
        <h2 className="text-center text-4xl font-semibold tracking-tight text-navy-900 mb-2">
-         Create your account
+         Reset your password
        </h2>
        <p className="text-center text-md text-gray-600 mb-2">
-         Or{' '}
-         <Link to="/auth/login" className="font-medium text-teal-600 hover:text-teal-500">
-           sign in to your account
-         </Link>
+         Enter your new password below
        </p>
      </div>
 
@@ -127,33 +107,18 @@ if (profileError) throw profileError;
          )}
 
 
+         {success && (
+           <div className="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg flex items-center">
+             <CheckCircle className="w-5 h-5 mr-2" />
+             {success}
+           </div>
+         )}
+
+
          <form className="space-y-6" onSubmit={handleSubmit}>
            <div>
-             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-               Email address
-             </label>
-             <div className="mt-1 relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Mail className="h-5 w-5 text-teal-400" />
-               </div>
-               <input
-                 id="email"
-                 name="email"
-                 type="email"
-                 autoComplete="email"
-                 required
-                 value={formData.email}
-                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                 className="appearance-none block w-full pl-10 px-3 py-3 border border-teal-100 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white"
-                 placeholder="Enter your email"
-               />
-             </div>
-           </div>
-
-
-           <div>
              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-               Password
+               New Password
              </label>
              <div className="mt-1 relative">
                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -163,12 +128,11 @@ if (profileError) throw profileError;
                  id="password"
                  name="password"
                  type="password"
-                 autoComplete="new-password"
                  required
                  value={formData.password}
                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                  className="appearance-none block w-full pl-10 px-3 py-3 border border-teal-100 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white"
-                 placeholder="Create a password"
+                 placeholder="Enter new password"
                />
              </div>
            </div>
@@ -176,7 +140,7 @@ if (profileError) throw profileError;
 
            <div>
              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-               Confirm Password
+               Confirm New Password
              </label>
              <div className="mt-1 relative">
                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,12 +150,11 @@ if (profileError) throw profileError;
                  id="confirmPassword"
                  name="confirmPassword"
                  type="password"
-                 autoComplete="new-password"
                  required
                  value={formData.confirmPassword}
                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                  className="appearance-none block w-full pl-10 px-3 py-3 border border-teal-100 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white"
-                 placeholder="Confirm your password"
+                 placeholder="Confirm new password"
                />
              </div>
            </div>
@@ -200,13 +163,13 @@ if (profileError) throw profileError;
            <div>
              <button
                type="submit"
-               disabled={isLoading}
+               disabled={isLoading }
                className="w-full flex justify-center py-3 px-4 rounded-full font-medium text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-lg transition-colors"
              >
                {isLoading ? (
                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                ) : (
-                 'Create account'
+                 'Reset Password'
                )}
              </button>
            </div>
